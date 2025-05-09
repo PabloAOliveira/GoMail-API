@@ -1,15 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
 	"email-service/models"
 	"email-service/rabbitmq"
-	"email-service/worker" 
+	"email-service/worker"
 )
 
 func main() {
@@ -23,6 +25,13 @@ func main() {
 
 	router := gin.Default()
 
+	// Configuração do CORS
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Authorization"}
+	router.Use(cors.New(config))
+
 	router.POST("/send-email", func(c *gin.Context) {
 		var task models.EmailTask
 
@@ -30,6 +39,8 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+		
+		fmt.Println("Passou Aqui")
 		
 		err := rabbitmq.Publish(task)
 		if err != nil {

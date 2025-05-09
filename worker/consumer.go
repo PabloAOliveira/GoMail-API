@@ -5,8 +5,9 @@ import (
 	"log"
 	"os"
 
+	"email-service/email"
 	"email-service/models"
-	"email-service/email" 
+
 	"github.com/streadway/amqp"
 )
 
